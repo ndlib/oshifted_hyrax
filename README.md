@@ -3,7 +3,10 @@ Hyrax in OpenShift
 
 # Development using Open Shift
 ## Setup
-Install Open Shift/Minishift (Reference: https://gist.github.com/h-parekh/bff04b97bdd8d2428771f9238d7a1e46):
+### Install Open Shift/Minishift 
+Reference: https://gist.github.com/h-parekh/bff04b97bdd8d2428771f9238d7a1e46
+
+Note: Skip to the next section if you already have Open Shift installed.
 1. `brew cask install minishift`
 1. `brew cask install virtualbox` Note: May prompt for a password. Enter your normal login password.
 1. Start open shift: `minishift start --vm-driver virtualbox`
@@ -11,7 +14,7 @@ Install Open Shift/Minishift (Reference: https://gist.github.com/h-parekh/bff04b
 1. Add the cli to your path: `eval $(minishift oc-env)` Note: Either add this to your shell profile, or make sure you run every time you open a new shell.
 1. Test the cli: `oc version`
 
-Create the project:
+### Create the Open Shift project:
 1. Clone this repository `git clone https://github.com/ndlib/oshifted_hyrax.git`
 1. Login to open shift: `oc login`. Enter 'admin' for the username, and enter any password you like:
     ```
