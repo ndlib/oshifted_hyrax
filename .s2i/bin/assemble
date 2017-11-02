@@ -13,10 +13,10 @@ bundle exec rake engine_cart:generate
 # overwrite of the files for now
 echo Overwriting .internal_test_app/config/[fedora.yml, solr.yml, redis.yml, cable.yml]
 # TODO: change these to curls, or figure out how to get them into the zip since they won't be in the hyrax repo
-cp /tmp/src/.s2i/assemble_configs/fedora.yml .internal_test_app/config/
-cp /tmp/src/.s2i/assemble_configs/solr.yml .internal_test_app/config/
-cp /tmp/src/.s2i/assemble_configs/redis.yml .internal_test_app/config/
-cp /tmp/src/.s2i/assemble_configs/cable.yml .internal_test_app/config/
+cp /tmp/assemble_configs/fedora.yml .internal_test_app/config/
+cp /tmp/assemble_configs/solr.yml .internal_test_app/config/
+cp /tmp/assemble_configs/redis.yml .internal_test_app/config/
+cp /tmp/assemble_configs/cable.yml .internal_test_app/config/
 
 # This is bad. Don't do this. Figure out how to do the users correctly when we do the curax app
 # https://stackoverflow.com/questions/42363105/permission-denied-mkdir-in-container-on-openshift

@@ -7,5 +7,6 @@
 #   ocbuild railsapi ..
 appname=$1
 targetdir=$2
+cp -r assemble_configs $targetdir/tmp/
 oc start-build -F $appname --from-dir=$targetdir
 #oc get builds --watch
