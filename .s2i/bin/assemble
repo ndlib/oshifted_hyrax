@@ -1,0 +1,26 @@
+#!/bin/bash
+echo "Running .s2i/bin/assemble"
+
+# move the application source
+mv /tmp/src/* $HOME/
+
+echo Build internal test app
+pushd ${HOME}
+gem install bundler
+bundle
+bundle exec rake engine_cart:generate
+# If we can change the defaults to use env we can avoid this. Doing a brute force
+# overwrite of the files for now
+echo Overwriting .internal_test_app/config/[fedora.yml, solr.yml, redis.yml, cable.yml]
+# TODO: change these to curls, or figure out how to get them into the zip since they won't be in the hyrax repo
+cp /tmp/src/.s2i/assemble_configs/fedora.yml .internal_test_app/config/
+cp /tmp/src/.s2i/assemble_configs/solr.yml .internal_test_app/config/
+cp /tmp/src/.s2i/assemble_configs/redis.yml .internal_test_app/config/
+cp /tmp/src/.s2i/assemble_configs/cable.yml .internal_test_app/config/
+
+# This is bad. Don't do this. Figure out how to do the users correctly when we do the curax app
+# https://stackoverflow.com/questions/42363105/permission-denied-mkdir-in-container-on-openshift
+# This is a broad stroke to give the app permission to write to tmp and to the sqlite db
+chmod -R 777 $HOME/.internal_test_app
+
+popd

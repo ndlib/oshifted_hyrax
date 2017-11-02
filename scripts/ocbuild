@@ -1,0 +1,11 @@
+# Runs a build for the specified application in your
+# current open shift project using the specified local
+# directory.
+# Usage:
+#   ocbuild <application name> <targetdir>
+# Example:
+#   ocbuild railsapi ..
+appname=$1
+targetdir=$2
+oc start-build -F $appname --from-dir=$targetdir
+#oc get builds --watch

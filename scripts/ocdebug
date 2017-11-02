@@ -1,0 +1,19 @@
+# Runs a byebug client to remotely debug the specified application in your
+# current open shift project.
+# Usage:
+#   ocdebug <application name>
+# Example:
+#   ocdebug railsapi
+appname=$1
+podname=`oc get pods -l app=$appname | grep Running | awk '{print $1}'`
+
+# Via running a terminal on the pod:
+oc exec -it $podname -- bash -c "bundle exec byebug --remote localhost:9876"
+
+# Via port forwarding to the pod (this one is fairly problematic):
+#oc port-forward $podname 9876:9876 &
+#forwardpid=$!
+#echo Port being forwarded by pid $forwardpid
+#bundle exec byebug --remote :9876
+#echo Killing portforwarder $forwardpid
+#kill $forwardpid

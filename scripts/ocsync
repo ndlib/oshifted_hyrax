@@ -1,0 +1,12 @@
+# Runs a persistent rsync to copy changed files to the current pod running
+# the specified application in your current open shift project. If your pod
+# dies, you'll need to rerun this command.
+# Usage:
+#   ocsync <application name> <targetdir>
+# Example:
+#   ocsync railsapi ..
+appname=$1
+targetdir=$2
+podname=`oc get pods -l app=$appname | grep Running | awk '{print $1}'`
+
+oc rsync "$targetdir" $podname:/opt/app-root/src --no-perms=true --watch

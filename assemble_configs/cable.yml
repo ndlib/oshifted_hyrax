@@ -1,0 +1,11 @@
+development:
+  adapter: redis
+  url: redis://<%= ENV['REDIS_HOST'] || 'localhost' %>:<%= ENV['REDIS_PORT'] || '6379' %>
+
+test:
+  adapter: async
+
+production:
+  adapter: redis
+  url: redis://<%= ENV['REDIS_HOST'] || 'localhost' %>:<%= ENV['REDIS_PORT'] || '6379' %>
+  channel_prefix: internal_production

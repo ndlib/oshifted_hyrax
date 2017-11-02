@@ -1,0 +1,6 @@
+#!/bin/bash
+echo "Running .s2i/bin/run"
+
+# run the application
+cd ${HOME}
+bundle exec rake engine_cart:server
