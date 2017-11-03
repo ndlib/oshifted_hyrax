@@ -4,6 +4,8 @@ items:
   kind: Service
   metadata:
     annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{"openshift.io/generated-by":"OpenShiftNewApp"},"creationTimestamp":null,"labels":{"app":"fedora"},"name":"fedora","namespace":"hyrax"},"spec":{"ports":[{"name":"8080-tcp","port":8080,"protocol":"TCP","targetPort":8080}],"selector":{"app":"fedora","deploymentconfig":"fedora"},"sessionAffinity":"None","type":"ClusterIP"},"status":{"loadBalancer":{}}}
       openshift.io/generated-by: OpenShiftNewApp
     creationTimestamp: null
     labels:
@@ -47,19 +49,86 @@ items:
   status:
     loadBalancer: {}
 - apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: redis
+    name: redis
+  spec:
+    ports:
+    - name: 6379-tcp
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+    selector:
+      app: redis
+      deploymentconfig: redis
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    labels:
+      app: solr
+    name: solr
+  spec:
+    ports:
+    - name: 8983-tcp
+      port: 8983
+      protocol: TCP
+      targetPort: 8983
+    selector:
+      app: solr
+      deploymentconfig: solr
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
   kind: Route
   metadata:
     annotations:
-      haproxy.router.openshift.io/timeout: 60s
-      kubectl.kubernetes.io/last-applied-configuration: |
-        {"apiVersion":"v1","kind":"Route","metadata":{"annotations":{"haproxy.router.openshift.io/timeout":"60s","openshift.io/host.generated":"true"},"creationTimestamp":null,"labels":{"app":"railsapp"},"name":"hyrax-application-route","namespace":"hyrax"},"spec":{"host":"hyrax-application-route-hyrax.192.168.99.100.nip.io","port":{"targetPort":"3000-tcp"},"to":{"kind":"Service","name":"railsapp","weight":100},"wildcardPolicy":"None"},"status":{"ingress":[{"conditions":[{"lastTransitionTime":"2017-10-20T20:13:13Z","status":"True","type":"Admitted"}],"host":"hyrax-application-route-hyrax.192.168.99.100.nip.io","routerName":"router","wildcardPolicy":"None"}]}}
       openshift.io/host.generated: "true"
     creationTimestamp: null
-    labels:
-      app: railsapp
-    name: hyrax-application-route
+    name: fedora
   spec:
-    host: hyrax-application-route-hyrax.192.168.99.100.nip.io
+    host: fedora-hyrax.192.168.99.101.nip.io
+    path: /
+    port:
+      targetPort: 8080-tcp
+    to:
+      kind: Service
+      name: fedora
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2017-11-03T17:26:46Z
+        status: "True"
+        type: Admitted
+      host: fedora-hyrax.192.168.99.101.nip.io
+      routerName: router
+      wildcardPolicy: None
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      haproxy.router.openshift.io/timeout: 2000s
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    name: railsapp
+  spec:
+    host: railsapp-hyrax.192.168.99.101.nip.io
+    path: /
     port:
       targetPort: 3000-tcp
     to:
@@ -70,16 +139,70 @@ items:
   status:
     ingress:
     - conditions:
-      - lastTransitionTime: 2017-11-02T13:25:23Z
+      - lastTransitionTime: 2017-11-03T14:04:50Z
         status: "True"
         type: Admitted
-      host: hyrax-application-route-hyrax.192.168.99.100.nip.io
+      host: railsapp-hyrax.192.168.99.101.nip.io
+      routerName: router
+      wildcardPolicy: None
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    name: redis
+  spec:
+    host: redis-hyrax.192.168.99.101.nip.io
+    path: /
+    port:
+      targetPort: 6379-tcp
+    to:
+      kind: Service
+      name: redis
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2017-11-03T18:01:12Z
+        status: "True"
+        type: Admitted
+      host: redis-hyrax.192.168.99.101.nip.io
+      routerName: router
+      wildcardPolicy: None
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    name: solr
+  spec:
+    host: solr-hyrax.192.168.99.101.nip.io
+    path: /
+    port:
+      targetPort: 8983-tcp
+    to:
+      kind: Service
+      name: solr
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2017-11-03T17:27:26Z
+        status: "True"
+        type: Admitted
+      host: solr-hyrax.192.168.99.101.nip.io
       routerName: router
       wildcardPolicy: None
 - apiVersion: v1
   kind: ImageStream
   metadata:
     annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"ImageStream","metadata":{"annotations":{"openshift.io/generated-by":"OpenShiftNewApp","openshift.io/image.dockerRepositoryCheck":"2017-11-02T15:29:59Z"},"creationTimestamp":null,"generation":2,"labels":{"app":"fedora"},"name":"fedora","namespace":"hyrax"},"spec":{"lookupPolicy":{"local":false},"tags":[{"annotations":{"openshift.io/imported-from":"yinlinchen/fcrepo4-docker"},"from":{"kind":"DockerImage","name":"172.30.1.1:5000/hyrax/fedora:latest"},"generation":2,"importPolicy":{},"name":"latest","referencePolicy":{"type":"Source"}}]},"status":{"dockerImageRepository":""}}
       openshift.io/generated-by: OpenShiftNewApp
       openshift.io/image.dockerRepositoryCheck: 2017-11-02T15:29:59Z
     creationTimestamp: null
@@ -90,17 +213,6 @@ items:
   spec:
     lookupPolicy:
       local: false
-    tags:
-    - annotations:
-        openshift.io/imported-from: yinlinchen/fcrepo4-docker
-      from:
-        kind: DockerImage
-        name: 172.30.1.1:5000/hyrax/fedora:latest
-      generation: 2
-      importPolicy: {}
-      name: latest
-      referencePolicy:
-        type: Source
   status:
     dockerImageRepository: ""
 - apiVersion: v1
@@ -108,7 +220,7 @@ items:
   metadata:
     annotations:
       kubectl.kubernetes.io/last-applied-configuration: |
-        {"apiVersion":"v1","kind":"ImageStream","metadata":{"annotations":{"openshift.io/generated-by":"OpenShiftNewApp"},"creationTimestamp":null,"generation":1,"labels":{"app":"railsapp"},"name":"railsapp","namespace":"hyrax"},"spec":{"lookupPolicy":{"local":false},"tags":[{"annotations":null,"from":{"kind":"DockerImage","name":"172.30.1.1:5000/hyrax/railsapp:latest"},"generation":null,"importPolicy":{},"name":"latest","referencePolicy":{"type":""}}]},"status":{"dockerImageRepository":""}}
+        {"apiVersion":"v1","kind":"ImageStream","metadata":{"annotations":{"openshift.io/generated-by":"OpenShiftNewApp","openshift.io/image.dockerRepositoryCheck":"2017-11-02T13:25:24Z"},"creationTimestamp":null,"generation":2,"labels":{"app":"railsapp"},"name":"railsapp","namespace":"hyrax"},"spec":{"lookupPolicy":{"local":false},"tags":[{"annotations":null,"from":{"kind":"DockerImage","name":"172.30.1.1:5000/hyrax/railsapp:latest"},"generation":2,"importPolicy":{},"name":"latest","referencePolicy":{"type":"Source"}}]},"status":{"dockerImageRepository":""}}
       openshift.io/generated-by: OpenShiftNewApp
       openshift.io/image.dockerRepositoryCheck: 2017-11-02T13:25:24Z
     creationTimestamp: null
@@ -127,6 +239,33 @@ items:
       generation: 2
       importPolicy: {}
       name: latest
+      referencePolicy:
+        type: Source
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+      openshift.io/image.dockerRepositoryCheck: 2017-11-03T17:18:16Z
+    creationTimestamp: null
+    generation: 2
+    labels:
+      app: solr
+    name: solr
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+        openshift.io/imported-from: solr:6.1
+      from:
+        kind: DockerImage
+        name: 172.30.1.1:5000/hyrax/solr:6.1
+      generation: 2
+      importPolicy: {}
+      name: "6.1"
       referencePolicy:
         type: Source
   status:
@@ -185,6 +324,8 @@ items:
   kind: DeploymentConfig
   metadata:
     annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"DeploymentConfig","metadata":{"annotations":{"openshift.io/generated-by":"OpenShiftNewApp"},"creationTimestamp":null,"generation":1,"labels":{"app":"fedora"},"name":"fedora","namespace":"hyrax"},"spec":{"replicas":1,"selector":{"app":"fedora","deploymentconfig":"fedora"},"strategy":{"activeDeadlineSeconds":21600,"resources":{},"rollingParams":{"intervalSeconds":1,"maxSurge":"25%","maxUnavailable":"25%","timeoutSeconds":600,"updatePeriodSeconds":1},"type":"Rolling"},"template":{"metadata":{"annotations":{"openshift.io/generated-by":"OpenShiftNewApp"},"creationTimestamp":null,"labels":{"app":"fedora","deploymentconfig":"fedora"}},"spec":{"containers":[{"image":"yinlinchen/fcrepo4-docker:latest","imagePullPolicy":"Always","name":"fedora","ports":[{"containerPort":8080,"protocol":"TCP"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","volumeMounts":[{"mountPath":"/mnt/ingest","name":"fedora-volume-1"}]}],"dnsPolicy":"ClusterFirst","restartPolicy":"Always","schedulerName":"default-scheduler","securityContext":{},"terminationGracePeriodSeconds":30,"volumes":[{"emptyDir":{},"name":"fedora-volume-1"}]}},"test":false,"triggers":[{"type":"ConfigChange"},{"imageChangeParams":{"automatic":true,"containerNames":["fedora"],"from":{"kind":"ImageStreamTag","name":"fedora:latest","namespace":"hyrax"}},"type":"ImageChange"}]},"status":{"availableReplicas":0,"latestVersion":0,"observedGeneration":0,"replicas":0,"unavailableReplicas":0,"updatedReplicas":0}}
       openshift.io/generated-by: OpenShiftNewApp
     creationTimestamp: null
     generation: 1
@@ -216,7 +357,7 @@ items:
           deploymentconfig: fedora
       spec:
         containers:
-        - image: yinlinchen/fcrepo4-docker@sha256:693dbe0a4bf6154813d4b3135ed5320c84c7324c551d3a7705dd7e13c69605d1
+        - image: yinlinchen/fcrepo4-docker:latest
           imagePullPolicy: Always
           name: fedora
           ports:
@@ -239,15 +380,6 @@ items:
     test: false
     triggers:
     - type: ConfigChange
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-        - fedora
-        from:
-          kind: ImageStreamTag
-          name: fedora:latest
-          namespace: hyrax
-      type: ImageChange
   status:
     availableReplicas: 0
     latestVersion: 0
@@ -260,7 +392,7 @@ items:
   metadata:
     annotations:
       kubectl.kubernetes.io/last-applied-configuration: |
-        {"apiVersion":"v1","kind":"DeploymentConfig","metadata":{"annotations":{"openshift.io/generated-by":"OpenShiftNewApp"},"creationTimestamp":null,"generation":1,"labels":{"app":"railsapp"},"name":"railsapp","namespace":"hyrax"},"spec":{"replicas":1,"selector":{"app":"railsapp","deploymentconfig":"railsapp"},"strategy":{"activeDeadlineSeconds":21600,"resources":{},"rollingParams":{"intervalSeconds":1,"maxSurge":"25%","maxUnavailable":"25%","timeoutSeconds":600,"updatePeriodSeconds":1},"type":"Rolling"},"template":{"metadata":{"annotations":{"openshift.io/generated-by":"OpenShiftNewApp"},"creationTimestamp":null,"labels":{"app":"railsapp","deploymentconfig":"railsapp"}},"spec":{"containers":[{"env":[{"name":"SECRET_KEY_BASE","value":"86c866f84b4db49487a2d7244c9c8567ef7982ad3a89a3e711ad969a28eee2589eed52b6d81ebe2e62be1ee58b2ef0709011e28dc907ff3ef3d252e1e608a970"},{"name":"RAILS_ENV","value":"development"},{"name":"SOLR_URL","value":"http://10.41.58.226:8983/solr/hydra-development/"},{"name":"FCREPO_DEV_HOST","value":"10.41.58.226"},{"name":"FCREPO_DEV_PORT","value":"8984"},{"name":"SOLR_DEV_HOST","value":"10.41.58.226"},{"name":"SOLR_DEV_PORT","value":"8983"},{"name":"REDIS_HOST","value":"10.41.58.226"},{"name":"REDIS_PORT","value":"6379"}],"image":"railsapp:latest","imagePullPolicy":"Always","name":"railsapp","ports":[{"containerPort":3000,"protocol":"TCP"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File"}],"dnsPolicy":"ClusterFirst","restartPolicy":"Always","schedulerName":"default-scheduler","securityContext":{},"terminationGracePeriodSeconds":30}},"test":false,"triggers":[{"type":"ConfigChange"},{"imageChangeParams":{"automatic":true,"containerNames":["railsapp"],"from":{"kind":"ImageStreamTag","name":"railsapp:latest","namespace":"hyrax"}},"type":"ImageChange"}]},"status":{"availableReplicas":0,"latestVersion":0,"observedGeneration":0,"replicas":0,"unavailableReplicas":0,"updatedReplicas":0}}
+        {"apiVersion":"v1","kind":"DeploymentConfig","metadata":{"annotations":{"openshift.io/generated-by":"OpenShiftNewApp"},"creationTimestamp":null,"generation":1,"labels":{"app":"railsapp"},"name":"railsapp","namespace":"hyrax"},"spec":{"replicas":1,"selector":{"app":"railsapp","deploymentconfig":"railsapp"},"strategy":{"activeDeadlineSeconds":21600,"resources":{},"rollingParams":{"intervalSeconds":1,"maxSurge":"25%","maxUnavailable":"25%","timeoutSeconds":600,"updatePeriodSeconds":1},"type":"Rolling"},"template":{"metadata":{"annotations":{"openshift.io/generated-by":"OpenShiftNewApp"},"creationTimestamp":null,"labels":{"app":"railsapp","deploymentconfig":"railsapp"}},"spec":{"containers":[{"env":[{"name":"SECRET_KEY_BASE","value":"86c866f84b4db49487a2d7244c9c8567ef7982ad3a89a3e711ad969a28eee2589eed52b6d81ebe2e62be1ee58b2ef0709011e28dc907ff3ef3d252e1e608a970"},{"name":"RAILS_ENV","value":"development"},{"name":"SOLR_URL","value":"http://10.41.58.226:8983/solr/hydra-development/"},{"name":"FCREPO_DEV_HOST","value":"fedora"},{"name":"FCREPO_DEV_PORT","value":"8080"},{"name":"SOLR_DEV_HOST","value":"10.41.58.226"},{"name":"SOLR_DEV_PORT","value":"8983"},{"name":"REDIS_HOST","value":"10.41.58.226"},{"name":"REDIS_PORT","value":"6379"}],"image":"172.30.1.1:5000/hyrax/railsapp@sha256:ed9ad10797b20e8554c212f07caec779b2400f835337401cfd6859fabc8c30cc","imagePullPolicy":"Always","name":"railsapp","ports":[{"containerPort":3000,"protocol":"TCP"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File"}],"dnsPolicy":"ClusterFirst","restartPolicy":"Always","schedulerName":"default-scheduler","securityContext":{},"terminationGracePeriodSeconds":30}},"test":false,"triggers":[{"type":"ConfigChange"},{"imageChangeParams":{"automatic":true,"containerNames":["railsapp"],"from":{"kind":"ImageStreamTag","name":"railsapp:latest","namespace":"hyrax"}},"type":"ImageChange"}]},"status":{"availableReplicas":0,"latestVersion":0,"observedGeneration":0,"replicas":0,"unavailableReplicas":0,"updatedReplicas":0}}
       openshift.io/generated-by: OpenShiftNewApp
     creationTimestamp: null
     generation: 1
@@ -308,10 +440,10 @@ items:
           - name: SOLR_DEV_PORT
             value: "8983"
           - name: REDIS_HOST
-            value: 10.41.58.226
+            value: redis
           - name: REDIS_PORT
             value: "6379"
-          image: 172.30.1.1:5000/hyrax/railsapp@sha256:ed9ad10797b20e8554c212f07caec779b2400f835337401cfd6859fabc8c30cc
+          image: 172.30.1.1:5000/hyrax/railsapp@sha256:199a72ec4af9e6cd6f67c3deac0b387fc5d6675b19ea0b238d6dd9b5223d9854
           imagePullPolicy: Always
           name: railsapp
           ports:
@@ -335,6 +467,148 @@ items:
         from:
           kind: ImageStreamTag
           name: railsapp:latest
+          namespace: hyrax
+      type: ImageChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: redis
+    name: redis
+  spec:
+    replicas: 1
+    selector:
+      app: redis
+      deploymentconfig: redis
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: redis
+          deploymentconfig: redis
+      spec:
+        containers:
+        - image: centos/redis-32-centos7@sha256:f071d8fba4f7bb561b2c5753c81c59e5340924d8d6864fb09ab43344c4006a84
+          imagePullPolicy: IfNotPresent
+          name: redis
+          ports:
+          - containerPort: 6379
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/redis/data
+            name: redis-volume-1
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - emptyDir: {}
+          name: redis-volume-1
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - redis
+        from:
+          kind: ImageStreamTag
+          name: redis:3.2
+          namespace: openshift
+      type: ImageChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: solr
+    name: solr
+  spec:
+    replicas: 1
+    selector:
+      app: solr
+      deploymentconfig: solr
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: solr
+          deploymentconfig: solr
+      spec:
+        containers:
+        - image: solr@sha256:0c17d145ccc3f892decdfbd2941328f30e2ac998a4c391f0ce1a2990082a6cdc
+          imagePullPolicy: IfNotPresent
+          name: solr
+          ports:
+          - containerPort: 8983
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - solr
+        from:
+          kind: ImageStreamTag
+          name: solr:6.1
           namespace: hyrax
       type: ImageChange
   status:
