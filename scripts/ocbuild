@@ -4,7 +4,7 @@
 # Usage:
 #   ocbuild <application name> <targetdir>
 # Example:
-#   ocbuild railsapi ..
+#   ocbuild railsapp ..
 appname=$1
 targetdir=$2
 cp -r assemble_configs $targetdir/tmp/

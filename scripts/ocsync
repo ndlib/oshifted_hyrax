@@ -2,11 +2,17 @@
 # the specified application in your current open shift project. If your pod
 # dies, you'll need to rerun this command.
 # Usage:
-#   ocsync <application name> <targetdir>
+#   ocsync <targetdir>
 # Example:
 #   ocsync railsapi ..
-appname=$1
-targetdir=$2
-podname=`oc get pods -l app=$appname | grep Running | awk '{print $1}'`
+targetdir=$1
+apppodname=`oc get pods -l app=railsapp | grep Running | awk '{print $1}'`
+solrpodname=`oc get pods -l app=solr | grep Running | awk '{print $1}'`
 
-oc rsync "$targetdir" $podname:/opt/app-root/src --no-perms=true --watch
+# Sync solr configs
+oc exec -it $solrpodname -- bash -c "mkdir -p /opt/solr/server/solr/mycores/hyrax"
+oc rsync $targetdir/solr/config/ $solrpodname:/opt/solr/server/solr/mycores/hyrax/
+oc exec -it $solrpodname -- bash -c "chmod -R 777 /opt/solr/server/solr/mycores/*"
+
+
+oc rsync "$targetdir" $apppodname:/opt/app-root/src --no-perms=true --watch
