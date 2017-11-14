@@ -2,11 +2,11 @@
 # current open shift project using the specified local
 # directory.
 # Usage:
-#   ocbuild <application name> <targetdir>
+#   ocbuild <targetdir>
 # Example:
-#   ocbuild railsapi ..
-appname=$1
-targetdir=$2
+#   ocbuild ~/repos/hyrax
+targetdir=$1
+
+oc login -u developer
 cp -r assemble_configs $targetdir/tmp/
-oc start-build -F $appname --from-dir=$targetdir
-#oc get builds --watch
+oc start-build -F railsapp --from-dir=$targetdir

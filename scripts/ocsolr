@@ -1,0 +1,17 @@
+# Copies hyrax schema/configs into solr pod and reloads the core named "hyrax"
+# Usage:
+#   ocsolr <hyraxdir>
+# Example:
+#   ocsolr ~/repos/hyrax
+targetdir=$1
+
+oc login -u developer
+podname=`oc get pods -l app=solr | grep Running | awk '{print $1}'`
+
+# Sync solr configs
+oc exec -it $podname -- bash -c "mkdir -p /opt/solr/server/solr/mycores/hyrax"
+oc rsync $targetdir/solr/config/ $podname:/opt/solr/server/solr/mycores/hyrax/
+oc exec -it $podname -- bash -c "chmod -R 777 /opt/solr/server/solr/mycores/*"
+# There may be a more elegant way to do a "create if dne, reload otherwise", but this works
+oc exec -it $podname -- bash -c "curl 'http://localhost:8983/solr/admin/cores?action=UNLOAD&core=hyrax'"
+oc exec -it $podname -- bash -c "curl 'http://localhost:8983/solr/admin/cores?action=CREATE&name=hyrax&instanceDir=mycores/hyrax'"

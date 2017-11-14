@@ -2,11 +2,11 @@
 # the specified application in your current open shift project. If your pod
 # dies, you'll need to rerun this command.
 # Usage:
-#   ocsync <application name> <targetdir>
+#   ocsync <targetdir>
 # Example:
-#   ocsync railsapi ..
-appname=$1
-targetdir=$2
-podname=`oc get pods -l app=$appname | grep Running | awk '{print $1}'`
+#   ocsync ~/repos/hyrax
+targetdir=$1
 
+oc login -u developer
+podname=`oc get pods -l app=railsapp | grep Running | awk '{print $1}'`
 oc rsync "$targetdir" $podname:/opt/app-root/src --no-perms=true --watch
