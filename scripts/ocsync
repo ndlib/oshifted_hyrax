@@ -4,15 +4,9 @@
 # Usage:
 #   ocsync <targetdir>
 # Example:
-#   ocsync railsapi ..
+#   ocsync ~/repos/hyrax
 targetdir=$1
-apppodname=`oc get pods -l app=railsapp | grep Running | awk '{print $1}'`
-solrpodname=`oc get pods -l app=solr | grep Running | awk '{print $1}'`
 
-# Sync solr configs
-oc exec -it $solrpodname -- bash -c "mkdir -p /opt/solr/server/solr/mycores/hyrax"
-oc rsync $targetdir/solr/config/ $solrpodname:/opt/solr/server/solr/mycores/hyrax/
-oc exec -it $solrpodname -- bash -c "chmod -R 777 /opt/solr/server/solr/mycores/*"
-
-
-oc rsync "$targetdir" $apppodname:/opt/app-root/src --no-perms=true --watch
+oc login -u developer
+podname=`oc get pods -l app=railsapp | grep Running | awk '{print $1}'`
+oc rsync "$targetdir" $podname:/opt/app-root/src --no-perms=true --watch
