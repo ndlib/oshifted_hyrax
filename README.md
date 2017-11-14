@@ -49,6 +49,13 @@ Note: Skip to the next section if you already have Open Shift installed.
     Pushed 9/9 layers, 100% complete
     Push successful
     ```
+1. Apply the security contexts needed to run the pods:
+    ```
+    oc login -u system:admin -n hyrax
+    oc apply -f scc.yaml
+    ```
+1. Load the solr core. From the root of the project directory:
+    `scripts/ocsolr /path/to/hyrax/repo`
 1. Test with a browser at: http://hyrax-application-route-hyrax.192.168.99.100.nip.io/
 
 ## Iterating on the Application Code
@@ -58,11 +65,11 @@ Since the containers are not reading the files on your host OS, there are two th
 For dynamically reloaded files, such as controllers, views, models, etc., running a constant rsync that will copy files from your host os to the container should be sufficient.
 
 From the root of the project directory:
-`scripts/ocsync railsapp .`
+`scripts/ocsync /<path_to_hyrax_repo>`
 
 Example:
 ```
-lib-2001:oshifted_api jgondron$ scripts/ocsync railsapp .
+lib-2001:oshifted_api jgondron$ scripts/ocsync railsapp ~/repos/hyrax
 building file list ... done
 ...
 ```
@@ -73,13 +80,13 @@ Changing a file should trigger the rsync (within a few seconds) and you should b
 For files that require a rebuild or a restart of rails, such as secrets, Gemfile, etc., you will need to rebuild the image. You can do this without having to push to the repo by running a build using the local directory.
 
 From the root of the project directory:
-`scripts/ocbuild railsapp /<path_to_hyrax_repo>`
+`scripts/ocbuild /<path_to_hyrax_repo>`
 
 Wait for the build to complete, then resume the rsync.
 
 Example:
 ```
-lib-2001:oshifted_api jgondron$ scripts/ocbuild railsapp .
+lib-2001:oshifted_api jgondron$ scripts/ocbuild railsapp ~/repos/hyrax
 Uploading directory "." as binary input for the build ...
 build "railsapp-5" started
 NAME         TYPE      FROM          STATUS     STARTED        DURATION
@@ -90,7 +97,7 @@ railsapp-4   Source    Binary@76b3d46   Complete   18 minutes ago   1m23s
 railsapp-5   Source    Binary@76b3d46   Running   15 minutes ago
 railsapp-5   Source    Binary@76b3d46   Complete   15 minutes ago   1m52s
 ^C
-lib-2001:oshifted_api jgondron$ scripts/ocsync railsapp .
+lib-2001:oshifted_api jgondron$ scripts/ocsync ~/repos/hyrax
 building file list ... done
 ...
 ```
@@ -99,11 +106,11 @@ building file list ... done
 Debugging requires running a remote debug client. The ocdebug script will start a terminal within the running pod for you and begin a debug client.
 
 From the root of the project directory:
-`scripts/ocdebug railsapp`
+`scripts/ocdebug`
 
 Example:
 ```
-lib-2001:oshifted_api jgondron$ scripts/ocdebug railsapp
+lib-2001:oshifted_api jgondron$ scripts/ocdebug
 Connecting to byebug server...
 Connected.
 ```
